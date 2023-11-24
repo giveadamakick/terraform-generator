@@ -2,7 +2,7 @@ import child_process from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import shell from 'shelljs';
-import { Block, Comment, Resource, Data, Module, Output, Provider, Variable, Backend, Provisioner, ResourceToDataOptions, Locals, Import } from './blocks';
+import { Block, Comment, Resource, Data, Module, Output, Provider, Variable, Backend, Provisioner, ResourceToDataOptions, Locals, Import, RequiredProviders } from './blocks';
 import { Util } from './Util';
 
 /**
@@ -283,6 +283,19 @@ export class TerraformGenerator {
   }
 
   /**
+   * Add required providers into Terraform.
+   *
+   * Refer to Terraform documentation on what can be put as type & arguments.
+   *
+   * @param args arguments
+   */
+  requiredProviders(args?: Record<string, any>): RequiredProviders {
+    const block = new RequiredProviders(args);
+    this.addBlocks(block);
+    return block;
+  }
+
+  /**
    * Add backend into Terraform.
    *
    * Refer to Terraform documentation on what can be put as type & arguments.
@@ -311,6 +324,19 @@ export class TerraformGenerator {
   }
 
   /**
+   * Add import into Terraform.
+   *
+   * Refer to Terraform documentation on what can be put as arguments.
+   *
+   * @param args arguments
+   */
+    import(args?: Record<string, any>): Import {
+      const importBlock = new Import(args);
+      this.addBlocks(importBlock);
+      return importBlock;
+    }
+
+  /**
    * Add variable values into Terraform.
    *
    * @param variables variables
@@ -321,19 +347,6 @@ export class TerraformGenerator {
       ...variables
     };
     return this;
-  }
-
-  /**
-   * Add import into Terraform.
-   *
-   * Refer to Terraform documentation on what can be put as arguments.
-   *
-   * @param args arguments
-   */
-  import(args?: Record<string, any>): Import {
-    const importBlock = new Import(args);
-    this.addBlocks(importBlock);
-    return importBlock;
   }
 
   /**
